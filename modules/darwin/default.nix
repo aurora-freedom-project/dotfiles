@@ -56,11 +56,8 @@
     ];
     
     casks = [
-      "iterm2"
+      "ghostty"
       "visual-studio-code"
-      "firefox"
-      "google-chrome"
-      "slack"
       "rectangle"
       "alfred"
     ];

@@ -45,7 +45,6 @@
   users.users.mike = {
     name = "mike";
     home = "/Users/mike";
-    shell = pkgs.zsh;
   };
   
   # Cấu hình hệ thống

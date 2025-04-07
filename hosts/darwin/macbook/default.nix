@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   # Cấu hình chung cho macOS
@@ -45,7 +45,7 @@
   users.users.mike = {
     name = "mike";
     home = "/Users/mike";
-    shell = pkgs.zsh;
+    shell = lib.mkForce pkgs.zsh;  # Using lib.mkForce to resolve the conflict
   };
   
   # Cấu hình hệ thống

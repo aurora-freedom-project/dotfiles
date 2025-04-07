@@ -3,7 +3,8 @@
 
   inputs = {
     # Nixpkgs
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    nixpkgs-darwin.url = "github:NixOS/nixpkgs/nixpkgs-24.11-darwin";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     
     # Home manager
     home-manager = {
@@ -13,12 +14,12 @@
     
     # Nix-darwin for macOS
     darwin = {
-      url = "github:lnl7/nix-darwin/master";
-      inputs.nixpkgs.follows = "nixpkgs";
+      url = "github:nix-darwin/nix-darwin/nix-darwin-24.11";
+      inputs.nixpkgs.follows = "nixpkgs-darwin";
     };
   };
 
-  outputs = { self, nixpkgs, home-manager, darwin, ... }@inputs:
+  outputs = { self, nixpkgs, nixpkgs-darwin, home-manager, darwin, ... }@inputs:
     let
       # Supported systems
       supportedSystems = [ "x86_64-linux" "x86_64-darwin" "aarch64-linux" "aarch64-darwin" ];
@@ -65,20 +66,6 @@
       darwinConfigurations = {
         # MacBook configuration
         macbook = darwin.lib.darwinSystem {
-          system = "aarch64-darwin";
-          modules = [
-            ./hosts/darwin/macbook
-            home-manager.darwinModules.home-manager
-            {
-              home-manager.useGlobalPkgs = true;
-              home-manager.useUserPackages = true;
-              home-manager.users.mike = import ./home/profiles/mike;
-            }
-          ];
-        };
-        
-        # Thêm cấu hình cho hostname "mike"
-        mike = darwin.lib.darwinSystem {
           system = "aarch64-darwin";
           modules = [
             ./hosts/darwin/macbook

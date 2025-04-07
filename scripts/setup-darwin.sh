@@ -56,13 +56,12 @@ check_nix() {
 # Kiểm tra xem nix-darwin đã được cài đặt chưa
 check_nix_darwin() {
   print_message "Kiểm tra nix-darwin..."
-  if ! command -v darwin-rebuild &> /dev/null; then
-    print_message "nix-darwin chưa được cài đặt. Đang cài đặt nix-darwin..."
-    nix-build https://github.com/LnL7/nix-darwin/archive/master.tar.gz -A installer
-    ./result/bin/darwin-installer
-    print_success "nix-darwin đã được cài đặt thành công!"
+  # We don't need to manually install nix-darwin since it's managed through flakes
+  # Just check if the flake.nix exists and contains darwin configuration
+  if [ -f "$HOME/.config/nixpkgs/flake.nix" ] && grep -q "darwin" "$HOME/.config/nixpkgs/flake.nix"; then
+    print_success "nix-darwin sẽ được quản lý thông qua flake!"
   else
-    print_success "nix-darwin đã được cài đặt!"
+    print_warning "Không tìm thấy cấu hình darwin trong flake.nix. Hãy đảm bảo flake.nix đã được thiết lập đúng."
   fi
 }
 
@@ -73,9 +72,10 @@ clone_dotfiles() {
   DOTFILES_DIR="$HOME/aurora-dotfiles"
   
   if [ -d "$DOTFILES_DIR" ]; then
-    print_message "Repository dotfiles đã tồn tại. Đang cập nhật..."
-    cd "$DOTFILES_DIR"
-    git pull
+    # When updating the dotfiles repository
+    echo "==> Repository dotfiles đã tồn tại. Đang cập nhật..."
+    # Add the --rebase flag to specify how to handle divergent branches
+    git -C "$DOTFILES_DIR" pull --rebase
   else
     print_message "Đang clone repository dotfiles..."
     git clone https://github.com/aurora-freedom-project/dotfiles.git "$DOTFILES_DIR"

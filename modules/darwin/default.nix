@@ -27,7 +27,6 @@
   # Cấu hình dịch vụ
   services = {
     nix-daemon.enable = true;
-    activate-system.enable = true;
   };
   
   # Cấu hình Nix

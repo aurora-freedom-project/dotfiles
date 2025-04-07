@@ -67,18 +67,21 @@
       };
       
       # Darwin (macOS) configurations
+      # In the darwinConfigurations section:
       darwinConfigurations = {
         # MacBook configuration
         macbook = darwin.lib.darwinSystem {
-          system = "x86_64-darwin";  # Changed from aarch64-darwin to x86_64-darwin
+          system = "x86_64-darwin";  # For Intel Mac
           modules = [
             ./hosts/darwin/macbook
+            ./modules/shared
+            ./modules/darwin
             home-manager.darwinModules.home-manager
             {
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
               home-manager.users.mike = import ./home/profiles/mike;
-              # Add allowUnfree configuration for Darwin
+              # Global allowUnfree configuration
               nixpkgs.config.allowUnfree = true;
             }
           ];

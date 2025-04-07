@@ -70,7 +70,7 @@
       darwinConfigurations = {
         # MacBook configuration
         macbook = darwin.lib.darwinSystem {
-          system = "aarch64-darwin";
+          system = "x86_64-darwin";  # Changed from aarch64-darwin to x86_64-darwin
           modules = [
             ./hosts/darwin/macbook
             home-manager.darwinModules.home-manager

@@ -1,0 +1,178 @@
+#!/bin/bash
+
+# setup-darwin.sh - Script tự động thiết lập và cấu hình cho macOS
+# Phần của Aurora Freedom Project Dotfiles
+
+set -e
+
+# Màu sắc cho output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+# Hàm hiển thị thông báo
+print_message() {
+  echo -e "${BLUE}==>${NC} $1"
+}
+
+print_success() {
+  echo -e "${GREEN}==>${NC} $1"
+}
+
+print_warning() {
+  echo -e "${YELLOW}==>${NC} $1"
+}
+
+print_error() {
+  echo -e "${RED}==>${NC} $1"
+}
+
+# Kiểm tra xem Homebrew đã được cài đặt chưa
+check_homebrew() {
+  print_message "Kiểm tra Homebrew..."
+  if ! command -v brew &> /dev/null; then
+    print_message "Homebrew chưa được cài đặt. Đang cài đặt Homebrew..."
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    print_success "Homebrew đã được cài đặt thành công!"
+  else
+    print_success "Homebrew đã được cài đặt!"
+  fi
+}
+
+# Kiểm tra xem Nix đã được cài đặt chưa
+check_nix() {
+  print_message "Kiểm tra Nix..."
+  if ! command -v nix &> /dev/null; then
+    print_message "Nix chưa được cài đặt. Đang cài đặt Nix..."
+    sh <(curl -L https://nixos.org/nix/install) --daemon
+    print_success "Nix đã được cài đặt thành công!"
+  else
+    print_success "Nix đã được cài đặt!"
+  fi
+}
+
+# Kiểm tra xem nix-darwin đã được cài đặt chưa
+check_nix_darwin() {
+  print_message "Kiểm tra nix-darwin..."
+  if ! command -v darwin-rebuild &> /dev/null; then
+    print_message "nix-darwin chưa được cài đặt. Đang cài đặt nix-darwin..."
+    nix-build https://github.com/LnL7/nix-darwin/archive/master.tar.gz -A installer
+    ./result/bin/darwin-installer
+    print_success "nix-darwin đã được cài đặt thành công!"
+  else
+    print_success "nix-darwin đã được cài đặt!"
+  fi
+}
+
+# Clone repository dotfiles
+clone_dotfiles() {
+  print_message "Kiểm tra repository dotfiles..."
+  
+  DOTFILES_DIR="$HOME/aurora-dotfiles"
+  
+  if [ -d "$DOTFILES_DIR" ]; then
+    print_message "Repository dotfiles đã tồn tại. Đang cập nhật..."
+    cd "$DOTFILES_DIR"
+    git pull
+  else
+    print_message "Đang clone repository dotfiles..."
+    git clone https://github.com/aurora-freedom-project/dotfiles.git "$DOTFILES_DIR"
+  fi
+  
+  print_success "Repository dotfiles đã sẵn sàng!"
+  
+  # Tạo thư mục .config/nixpkgs nếu chưa tồn tại
+  mkdir -p "$HOME/.config/nixpkgs"
+  
+  # Sao chép các file cấu hình từ repository vào .config/nixpkgs
+  print_message "Đang sao chép các file cấu hình..."
+  cp -r "$DOTFILES_DIR"/* "$HOME/.config/nixpkgs/"
+  
+  print_success "Đã sao chép các file cấu hình!"
+}
+
+# Thiết lập cấu hình người dùng
+setup_user_profile() {
+  print_message "Thiết lập cấu hình người dùng..."
+  
+  # Lấy thông tin từ người dùng
+  read -p "Nhập hostname: " hostname
+  read -p "Nhập username: " username
+  
+  # Tạo thư mục profile nếu chưa tồn tại
+  mkdir -p "$HOME/.config/nixpkgs/home/profiles/$username"
+  
+  # Tạo file cấu hình default.nix cho profile
+  cat > "$HOME/.config/nixpkgs/home/profiles/$username/default.nix" << EOF
+{ config, pkgs, ... }:
+
+{
+  # Cấu hình cá nhân cho $username
+  home.username = "$username";
+  home.homeDirectory = "/Users/$username";
+  
+  # Thêm stateVersion để tránh lỗi
+  home.stateVersion = "23.11";
+  
+  # Các gói cá nhân
+  home.packages = with pkgs; [
+    # Thêm các gói cá nhân ở đây
+    git
+    vim
+    vscode
+  ];
+  
+  # Cấu hình cá nhân khác
+  programs = {
+    # Cấu hình các chương trình ở đây
+    zsh.enable = true;
+  };
+}
+EOF
+  
+  # Cập nhật hostname
+  sudo scutil --set HostName "$hostname"
+  
+  print_success "Đã thiết lập cấu hình người dùng cho $username trên $hostname!"
+}
+
+# Áp dụng cấu hình
+apply_configuration() {
+  print_message "Áp dụng cấu hình..."
+  
+  # Kiểm tra xem flake.nix đã tồn tại chưa
+  if [ -f "$HOME/.config/nixpkgs/flake.nix" ]; then
+    # Rebuild hệ thống
+    darwin-rebuild switch --flake "$HOME/.config/nixpkgs#$hostname"
+    print_success "Đã áp dụng cấu hình thành công!"
+  else
+    print_error "Không tìm thấy file flake.nix. Vui lòng kiểm tra lại cấu trúc thư mục."
+    exit 1
+  fi
+}
+
+# Hàm chính
+main() {
+  print_message "Bắt đầu thiết lập môi trường macOS..."
+  
+  # Kiểm tra các công cụ cần thiết
+  check_homebrew
+  check_nix
+  check_nix_darwin
+  
+  # Clone và cài đặt dotfiles
+  clone_dotfiles
+  
+  # Thiết lập cấu hình người dùng
+  setup_user_profile
+  
+  # Áp dụng cấu hình
+  apply_configuration
+  
+  print_success "Thiết lập hoàn tất! Hệ thống đã được cấu hình theo dotfiles."
+}
+
+# Chạy hàm chính
+main

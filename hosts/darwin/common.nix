@@ -34,11 +34,6 @@
       autoUpdate = true;
       cleanup = "zap";
     };
-    
-    taps = [
-      "homebrew/cask-fonts"
-      "homebrew/services"
-    ];
   };
   
   # Cấu hình người dùng

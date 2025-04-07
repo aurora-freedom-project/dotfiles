@@ -114,7 +114,7 @@ setup_user_profile() {
   home.homeDirectory = "/Users/$username";
   
   # Thêm stateVersion để tránh lỗi
-  home.stateVersion = "23.11";
+  home.stateVersion = "24.11";
   
   # Các gói cá nhân
   home.packages = with pkgs; [

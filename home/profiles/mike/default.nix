@@ -6,7 +6,7 @@
   home.homeDirectory = "/Users/mike";
   
   # Thêm stateVersion để tránh lỗi
-  home.stateVersion = "23.11";
+  home.stateVersion = "24.11";
   
   # Các gói cá nhân
   home.packages = with pkgs; [

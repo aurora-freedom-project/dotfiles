@@ -209,7 +209,7 @@ cat > ~/.config/nixpkgs/home/profiles/$username/default.nix << EOF
   home.homeDirectory = "/home/$username";
   
   # Thêm stateVersion để tránh lỗi
-  home.stateVersion = "23.11";
+  home.stateVersion = "24.11";
   
   # Các gói cá nhân
   home.packages = with pkgs; [
@@ -259,7 +259,7 @@ cat > ~/.config/nixpkgs/home/profiles/$username/default.nix << EOF
   home.homeDirectory = "/home/$username";
   
   # Thêm stateVersion để tránh lỗi
-  home.stateVersion = "23.11";
+  home.stateVersion = "24.11";
   
   # Các gói cá nhân
   home.packages = with pkgs; [

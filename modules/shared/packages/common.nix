@@ -3,7 +3,7 @@
 
 {
   # Common packages for all platforms
-  home.packages = with pkgs; [
+  environment.systemPackages = with pkgs; [
     # Development tools
     git
     vim
@@ -27,7 +27,7 @@
     
     # System tools
     bat
-    exa
+    eza  # Changed from exa to eza
     jq
     
     # Languages and runtimes

@@ -56,7 +56,11 @@
     ];
     
     casks = [
+      "brave"
+      "arc"
       "ghostty"
+      "wezterm"
+      "trae"
       "visual-studio-code"
       "rectangle"
       "alfred"

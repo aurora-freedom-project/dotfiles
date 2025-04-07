@@ -28,8 +28,11 @@
       # Helper function to generate an attrset '{ x86_64-linux = f "x86_64-linux"; ... }'
       forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
       
-      # Nixpkgs instantiated for supported systems
-      nixpkgsFor = forAllSystems (system: import nixpkgs { inherit system; });
+      # Nixpkgs instantiated for supported systems with allowUnfree enabled
+      nixpkgsFor = forAllSystems (system: import nixpkgs { 
+        inherit system; 
+        config = { allowUnfree = true; };
+      });
     in
     {
       # NixOS configurations
@@ -75,6 +78,8 @@
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
               home-manager.users.mike = import ./home/profiles/mike;
+              # Add allowUnfree configuration for Darwin
+              nixpkgs.config.allowUnfree = true;
             }
           ];
         };

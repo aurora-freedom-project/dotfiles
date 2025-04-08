@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   # Cấu hình chung cho NixOS
@@ -27,7 +27,7 @@
   users.users.rnd = {
     isNormalUser = true;
     extraGroups = [ "wheel" ];
-    shell = pkgs.zsh;
+    shell = lib.mkForce pkgs.zsh;
   };
 
   # Cấu hình hệ thống

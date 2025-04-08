@@ -67,9 +67,8 @@
       };
       
       # Darwin (macOS) configurations
-      # In the darwinConfigurations section:
       darwinConfigurations = {
-        # Template for MacBook configurations
+        # MacBook configuration
         macbook = darwin.lib.darwinSystem {
           system = "x86_64-darwin";  # For Intel Mac
           modules = [
@@ -83,25 +82,8 @@
               home-manager.users.mike = import ./home/profiles/mike;
               # Global allowUnfree configuration
               nixpkgs.config.allowUnfree = true;
-            };
-          
-          # Add a template for other team members with MacBooks
-          # This allows each team member to have their own configuration
-          macbook-template = { username ? "teamuser" }: darwin.lib.darwinSystem {
-            system = "x86_64-darwin";  # For Intel Mac (change as needed)
-            modules = [
-              ./hosts/darwin/macbook
-              ./modules/shared
-              ./modules/darwin
-              home-manager.darwinModules.home-manager
-              {
-                home-manager.useGlobalPkgs = true;
-                home-manager.useUserPackages = true;
-                home-manager.users.${username} = import ./home/profiles/${username};
-                nixpkgs.config.allowUnfree = true;
-              }
-            ];
-          };
+            }
+          ];
         };
       };
       

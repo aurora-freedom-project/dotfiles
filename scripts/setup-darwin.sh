@@ -137,11 +137,14 @@ setup_user_profile() {
     print_message "Sử dụng template có sẵn..."
     cp -r "$HOME/.config/nixpkgs/home/profiles/template/." "$HOME/.config/nixpkgs/home/profiles/$username/"
     
-    # Fix: Add space after -i for macOS sed
-    sed -i "" "s/{{USERNAME}}/$username/g" "$HOME/.config/nixpkgs/home/profiles/$username/default.nix"
-    sed -i "" "s|{{HOMEDIR}}|/Users/$username|g" "$HOME/.config/nixpkgs/home/profiles/$username/default.nix"
-    sed -i "" "s/{{FULLNAME}}/$fullname/g" "$HOME/.config/nixpkgs/home/profiles/$username/default.nix"
-    sed -i "" "s/{{EMAIL}}/$email/g" "$HOME/.config/nixpkgs/home/profiles/$username/default.nix"
+    # Fix: Use proper macOS sed syntax with extension backup
+    sed -i.bak "s/{{USERNAME}}/$username/g" "$HOME/.config/nixpkgs/home/profiles/$username/default.nix"
+    sed -i.bak "s|{{HOMEDIR}}|/Users/$username|g" "$HOME/.config/nixpkgs/home/profiles/$username/default.nix"
+    sed -i.bak "s/{{FULLNAME}}/$fullname/g" "$HOME/.config/nixpkgs/home/profiles/$username/default.nix"
+    sed -i.bak "s/{{EMAIL}}/$email/g" "$HOME/.config/nixpkgs/home/profiles/$username/default.nix"
+    
+    # Remove backup files
+    rm "$HOME/.config/nixpkgs/home/profiles/$username/default.nix.bak"
   else
     print_message "Template không tồn tại, tạo file mặc định..."
     # Create default.nix file directly if template doesn't exist

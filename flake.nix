@@ -99,7 +99,7 @@
               home-manager.useUserPackages = true;
               home-manager.users.${username} = import ./home/profiles/${username};
               nixpkgs.config.allowUnfree = true;
-            };
+            }  
           ];
         };
       

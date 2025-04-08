@@ -37,7 +37,6 @@
     zsh = {
       enable = true;
       syntaxHighlighting.enable = true;
-      autocd = true;
       enableAutosuggestions = true;
       enableCompletion = true;
     

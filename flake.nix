@@ -39,7 +39,8 @@
         let
           profilesDir = dir + "/home/profiles";
           contents = builtins.readDir profilesDir;
-          dirNames = builtins.attrNames (builtins.filterAttrs (n: v: v == "directory" && n != "template") contents);
+          # Fix: Use nixpkgs.lib.filterAttrs instead of builtins.filterAttrs
+          dirNames = builtins.attrNames (nixpkgs.lib.filterAttrs (n: v: v == "directory" && n != "template") contents);
         in
           dirNames;
           
@@ -55,7 +56,8 @@
             };
           };
         in
-          builtins.listToAttrs (map mkConfig users);
+          # Make sure this returns an empty set if no users are found
+          if users == [] then {} else builtins.listToAttrs (map mkConfig users);
       
       # Helper function to create Darwin configurations
       mkDarwinSystem = { hostname, username, system ? "x86_64-darwin" }: 
@@ -178,4 +180,4 @@
         }
       );
     }; 
-} 
+}

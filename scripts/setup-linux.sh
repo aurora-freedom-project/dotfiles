@@ -150,7 +150,7 @@ setup_nixos() {
   fi
 }
 
-# Update the setup_user_profile function
+# Thiết lập cấu hình người dùng
 setup_user_profile() {
   print_message "Thiết lập cấu hình người dùng..."
   
@@ -163,14 +163,52 @@ setup_user_profile() {
   # Tạo thư mục profile nếu chưa tồn tại
   mkdir -p "$HOME/.config/nixpkgs/home/profiles/$username"
   
-  # Copy template profile và thay thế các placeholder
-  cp -r "$HOME/.config/nixpkgs/home/profiles/template/." "$HOME/.config/nixpkgs/home/profiles/$username/"
+  # Check if template exists and is a file (not just a directory)
+  if [ -f "$HOME/.config/nixpkgs/home/profiles/template/default.nix" ]; then
+    print_message "Sử dụng template có sẵn..."
+    cp -r "$HOME/.config/nixpkgs/home/profiles/template/." "$HOME/.config/nixpkgs/home/profiles/$username/"
+    
+    # Use Linux-specific sed syntax (no need for backup files)
+    sed -i "s/{{USERNAME}}/$username/g" "$HOME/.config/nixpkgs/home/profiles/$username/default.nix"
+    sed -i "s|{{HOMEDIR}}|/home/$username|g" "$HOME/.config/nixpkgs/home/profiles/$username/default.nix"
+    sed -i "s/{{FULLNAME}}/$fullname/g" "$HOME/.config/nixpkgs/home/profiles/$username/default.nix"
+    sed -i "s/{{EMAIL}}/$email/g" "$HOME/.config/nixpkgs/home/profiles/$username/default.nix"
+  else
+    print_message "Template không tồn tại, tạo file mặc định..."
+    # Create default.nix file directly if template doesn't exist
+    cat > "$HOME/.config/nixpkgs/home/profiles/$username/default.nix" << EOF
+{ config, pkgs, ... }:
+
+{
+  # Cấu hình cá nhân cho $username
+  home.username = "$username";
+  home.homeDirectory = "/home/$username";
   
-  # Replace placeholders in the default.nix file
-  sed -i "s|{{USERNAME}}|$username|g" "$HOME/.config/nixpkgs/home/profiles/$username/default.nix"
-  sed -i "s|{{HOMEDIR}}|/home/$username|g" "$HOME/.config/nixpkgs/home/profiles/$username/default.nix"
-  sed -i "s|{{FULLNAME}}|$fullname|g" "$HOME/.config/nixpkgs/home/profiles/$username/default.nix"
-  sed -i "s|{{EMAIL}}|$email|g" "$HOME/.config/nixpkgs/home/profiles/$username/default.nix"
+  # Thêm stateVersion để tránh lỗi
+  home.stateVersion = "24.11";
+  
+  # Các gói cá nhân
+  home.packages = with pkgs; [
+    # Thêm các gói cá nhân ở đây
+    git
+    vim
+    vscode
+  ];
+  
+  # Cấu hình cá nhân khác
+  programs = {
+    git = {
+      enable = true;
+      userName = "$fullname";
+      userEmail = "$email";
+    };
+    
+    # Cấu hình các chương trình ở đây
+    zsh.enable = true;
+  };
+}
+EOF
+  fi
   
   # Cập nhật hostname nếu có quyền sudo và không phải NixOS
   if [ "$OS_TYPE" != "nixos" ] && command -v sudo &> /dev/null; then
@@ -189,6 +227,11 @@ apply_configuration() {
   
   # Kiểm tra xem flake.nix đã tồn tại chưa
   if [ -f "$HOME/.config/nixpkgs/flake.nix" ]; then
+    # Update flake inputs first
+    print_message "Cập nhật flake inputs..."
+    cd "$HOME/.config/nixpkgs" && nix flake update
+    
+    # Then apply configuration based on OS type
     if [ "$OS_TYPE" == "nixos" ]; then
       # Rebuild hệ thống NixOS
       sudo nixos-rebuild switch --flake "$HOME/.config/nixpkgs#$hostname"

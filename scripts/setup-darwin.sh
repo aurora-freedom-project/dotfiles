@@ -179,7 +179,12 @@ apply_configuration() {
   
   # Kiểm tra xem flake.nix đã tồn tại chưa
   if [ -f "$HOME/.config/nixpkgs/flake.nix" ]; then
+    # Update flake inputs first
+    print_message "Cập nhật flake inputs..."
+    cd "$HOME/.config/nixpkgs" && nix flake update
+    
     # Rebuild hệ thống
+    print_message "Rebuild hệ thống..."
     darwin-rebuild switch --flake "$HOME/.config/nixpkgs#$hostname"
     print_success "Đã áp dụng cấu hình thành công!"
   else

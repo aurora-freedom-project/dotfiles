@@ -146,9 +146,6 @@
         # Merge with dynamically generated configurations
         // mkAllDarwinConfigs ./.;
       
-      # Similar approach can be applied to nixosConfigurations and homeConfigurations
-    };
-      
       # Home-manager standalone configurations for non-NixOS Linux (Ubuntu)
       homeConfigurations = {
         "rnd@ubuntu" = home-manager.lib.homeManagerConfiguration {
@@ -180,5 +177,5 @@
           };
         }
       );
-    };
-}
+    }; 
+} 

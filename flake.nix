@@ -34,6 +34,29 @@
         config = { allowUnfree = true; };
       });
       
+      # Get all user profiles from the profiles directory
+      getUserProfiles = dir:
+        let
+          profilesDir = dir + "/home/profiles";
+          contents = builtins.readDir profilesDir;
+          dirNames = builtins.attrNames (builtins.filterAttrs (n: v: v == "directory" && n != "template") contents);
+        in
+          dirNames;
+          
+      # Helper function to create Darwin configurations for all users
+      mkAllDarwinConfigs = dir:
+        let
+          users = getUserProfiles dir;
+          mkConfig = username: {
+            name = "macbook-${username}";
+            value = mkDarwinSystem {
+              hostname = "macbook-${username}";
+              username = username;
+            };
+          };
+        in
+          builtins.listToAttrs (map mkConfig users);
+      
       # Helper function to create Darwin configurations
       mkDarwinSystem = { hostname, username, system ? "x86_64-darwin" }: 
         darwin.lib.darwinSystem {
@@ -110,22 +133,21 @@
         };
       };
       
-      # Darwin (macOS) configurations
-      darwinConfigurations = {
-        # Default macbook configuration
-        macbook = mkDarwinSystem { 
-          hostname = "macbook"; 
-          username = "mike";
-        };
-        
-        # Example of how to add a new team member's macbook
-        "macbook-john" = mkDarwinSystem {
-          hostname = "macbook-john";
-          username = "john";
-        };
-      };
+      # Darwin (macOS) configurations - more dynamic approach
+      darwinConfigurations = 
+        # Add static configurations
+        {
+          # Default macbook configuration
+          macbook = mkDarwinSystem { 
+            hostname = "macbook"; 
+            username = "mike";
+          };
+        } 
+        # Merge with dynamically generated configurations
+        // mkAllDarwinConfigs ./.;
       
-      # Similar updates for nixosConfigurations and homeConfigurations
+      # Similar approach can be applied to nixosConfigurations and homeConfigurations
+    };
       
       # Home-manager standalone configurations for non-NixOS Linux (Ubuntu)
       homeConfigurations = {

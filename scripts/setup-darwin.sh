@@ -120,7 +120,6 @@ clone_dotfiles() {
 }
 
 # Thiết lập cấu hình người dùng
-# Update the setup_user_profile function
 setup_user_profile() {
   print_message "Thiết lập cấu hình người dùng..."
   
@@ -131,10 +130,22 @@ setup_user_profile() {
   read -p "Nhập email: " email
   
   # Tạo thư mục profile nếu chưa tồn tại
-  mkdir -p "$DOTFILES_DIR/home/profiles/$username"
+  mkdir -p "$HOME/.config/nixpkgs/home/profiles/$username"
   
-  # Create default.nix file directly instead of using sed
-  cat > "$DOTFILES_DIR/home/profiles/$username/default.nix" << EOF
+  # Check if template exists and is a file (not just a directory)
+  if [ -f "$HOME/.config/nixpkgs/home/profiles/template/default.nix" ]; then
+    print_message "Sử dụng template có sẵn..."
+    cp -r "$HOME/.config/nixpkgs/home/profiles/template/." "$HOME/.config/nixpkgs/home/profiles/$username/"
+    
+    # For macOS, sed requires an empty string for in-place editing
+    sed -i "" "s|{{USERNAME}}|$username|g" "$HOME/.config/nixpkgs/home/profiles/$username/default.nix"
+    sed -i "" "s|{{HOMEDIR}}|/Users/$username|g" "$HOME/.config/nixpkgs/home/profiles/$username/default.nix"
+    sed -i "" "s|{{FULLNAME}}|$fullname|g" "$HOME/.config/nixpkgs/home/profiles/$username/default.nix"
+    sed -i "" "s|{{EMAIL}}|$email|g" "$HOME/.config/nixpkgs/home/profiles/$username/default.nix"
+  else
+    print_message "Template không tồn tại, tạo file mặc định..."
+    # Create default.nix file directly if template doesn't exist
+    cat > "$HOME/.config/nixpkgs/home/profiles/$username/default.nix" << EOF
 { config, pkgs, ... }:
 
 {
@@ -166,6 +177,7 @@ setup_user_profile() {
   };
 }
 EOF
+  fi
   
   # Cập nhật hostname
   sudo scutil --set HostName "$hostname"

@@ -74,8 +74,34 @@ clone_dotfiles() {
   if [ -d "$DOTFILES_DIR" ]; then
     # When updating the dotfiles repository
     echo "==> Repository dotfiles đã tồn tại. Đang cập nhật..."
-    # Add the --rebase flag to specify how to handle divergent branches
-    git -C "$DOTFILES_DIR" pull --rebase
+    
+    # Check if there are unstaged changes
+    if [ -n "$(git -C "$DOTFILES_DIR" status --porcelain)" ]; then
+      print_warning "Phát hiện thay đổi chưa commit trong repository."
+      read -p "Bạn muốn (1) stash các thay đổi, (2) bỏ qua việc cập nhật, hay (3) thoát? [1/2/3]: " choice
+      
+      case "$choice" in
+        1)
+          print_message "Đang stash các thay đổi..."
+          git -C "$DOTFILES_DIR" stash
+          print_message "Đang cập nhật repository..."
+          git -C "$DOTFILES_DIR" pull --rebase
+          ;;
+        2)
+          print_warning "Bỏ qua việc cập nhật repository."
+          ;;
+        3)
+          print_error "Thoát theo yêu cầu của người dùng."
+          exit 1
+          ;;
+        *)
+          print_warning "Lựa chọn không hợp lệ. Bỏ qua việc cập nhật repository."
+          ;;
+      esac
+    else
+      # No unstaged changes, proceed with pull
+      git -C "$DOTFILES_DIR" pull --rebase
+    fi
   else
     print_message "Đang clone repository dotfiles..."
     git clone https://github.com/aurora-freedom-project/dotfiles.git "$DOTFILES_DIR"

@@ -33,41 +33,6 @@
         inherit system; 
         config = { allowUnfree = true; };
       });
-    in
-    {
-      # NixOS configurations
-      nixosConfigurations = {
-        # Legion laptop configuration
-        legion = nixpkgs.lib.nixosSystem {
-          system = "x86_64-linux";
-          modules = [
-            ./hosts/nixos/legion
-            home-manager.nixosModules.home-manager
-            {
-              home-manager.useGlobalPkgs = true;
-              home-manager.useUserPackages = true;
-              home-manager.users.rnd = import ./home/profiles/rnd;
-            }
-          ];
-        };
-        
-        # WSL configuration
-        wsl = nixpkgs.lib.nixosSystem {
-          system = "x86_64-linux";
-          modules = [
-            ./hosts/nixos/wsl
-            home-manager.nixosModules.home-manager
-            {
-              home-manager.useGlobalPkgs = true;
-              home-manager.useUserPackages = true;
-              home-manager.users.rnd = import ./home/profiles/rnd;
-            }
-          ];
-        };
-      };
-      
-      # Darwin (macOS) configurations
-      # In the outputs section, add a function to create configurations dynamically:
       
       # Helper function to create Darwin configurations
       mkDarwinSystem = { hostname, username, system ? "x86_64-darwin" }: 
@@ -112,8 +77,40 @@
             ./home/profiles/${username}
           ];
         };
+    in
+    {
+      # NixOS configurations
+      nixosConfigurations = {
+        # Legion laptop configuration
+        legion = nixpkgs.lib.nixosSystem {
+          system = "x86_64-linux";
+          modules = [
+            ./hosts/nixos/legion
+            home-manager.nixosModules.home-manager
+            {
+              home-manager.useGlobalPkgs = true;
+              home-manager.useUserPackages = true;
+              home-manager.users.rnd = import ./home/profiles/rnd;
+            }
+          ];
+        };
+        
+        # WSL configuration
+        wsl = nixpkgs.lib.nixosSystem {
+          system = "x86_64-linux";
+          modules = [
+            ./hosts/nixos/wsl
+            home-manager.nixosModules.home-manager
+            {
+              home-manager.useGlobalPkgs = true;
+              home-manager.useUserPackages = true;
+              home-manager.users.rnd = import ./home/profiles/rnd;
+            }
+          ];
+        };
+      };
       
-      # Then use these functions in your configurations:
+      # Darwin (macOS) configurations
       darwinConfigurations = {
         # Default macbook configuration
         macbook = mkDarwinSystem { 

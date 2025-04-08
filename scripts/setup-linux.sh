@@ -124,44 +124,27 @@ setup_nixos() {
   fi
 }
 
-# Thiết lập cấu hình người dùng
+# Update the setup_user_profile function
 setup_user_profile() {
   print_message "Thiết lập cấu hình người dùng..."
   
   # Lấy thông tin từ người dùng
   read -p "Nhập hostname: " hostname
   read -p "Nhập username: " username
+  read -p "Nhập họ tên đầy đủ: " fullname
+  read -p "Nhập email: " email
   
   # Tạo thư mục profile nếu chưa tồn tại
   mkdir -p "$HOME/.config/nixpkgs/home/profiles/$username"
   
-  # Tạo file cấu hình default.nix cho profile
-  cat > "$HOME/.config/nixpkgs/home/profiles/$username/default.nix" << EOF
-{ config, pkgs, ... }:
-
-{
-  # Cấu hình cá nhân cho $username
-  home.username = "$username";
-  home.homeDirectory = "/home/$username";
+  # Copy template profile và thay thế các placeholder
+  cp -r "$HOME/.config/nixpkgs/home/profiles/template/." "$HOME/.config/nixpkgs/home/profiles/$username/"
   
-  # Thêm stateVersion để tránh lỗi
-  home.stateVersion = "24.11";
-  
-  # Các gói cá nhân
-  home.packages = with pkgs; [
-    # Thêm các gói cá nhân ở đây
-    git
-    vim
-    vscode
-  ];
-  
-  # Cấu hình cá nhân khác
-  programs = {
-    # Cấu hình các chương trình ở đây
-    zsh.enable = true;
-  };
-}
-EOF
+  # Replace placeholders in the default.nix file
+  sed -i "s|{{USERNAME}}|$username|g" "$HOME/.config/nixpkgs/home/profiles/$username/default.nix"
+  sed -i "s|{{HOMEDIR}}|/home/$username|g" "$HOME/.config/nixpkgs/home/profiles/$username/default.nix"
+  sed -i "s|{{FULLNAME}}|$fullname|g" "$HOME/.config/nixpkgs/home/profiles/$username/default.nix"
+  sed -i "s|{{EMAIL}}|$email|g" "$HOME/.config/nixpkgs/home/profiles/$username/default.nix"
   
   # Cập nhật hostname nếu có quyền sudo
   if command -v sudo &> /dev/null; then

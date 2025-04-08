@@ -176,6 +176,7 @@ function Install-LinuxDistro {
 }
 
 # Thiết lập cấu hình người dùng
+# Update the Setup-UserProfile function
 function Setup-UserProfile {
     param (
         [string]$Distro
@@ -186,6 +187,8 @@ function Setup-UserProfile {
     # Lấy thông tin từ người dùng
     $hostname = Read-Host "Nhập hostname"
     $username = Read-Host "Nhập username"
+    $fullname = Read-Host "Nhập họ tên đầy đủ"
+    $email = Read-Host "Nhập email"
     
     if ($Distro -eq "Ubuntu") {
         # Tạo script bash để thiết lập cấu hình trên Ubuntu
@@ -199,38 +202,23 @@ sudo hostnamectl set-hostname $hostname
 # Tạo thư mục cấu hình
 mkdir -p ~/.config/nixpkgs/home/profiles/$username
 
-# Tạo file cấu hình default.nix cho profile
-cat > ~/.config/nixpkgs/home/profiles/$username/default.nix << EOF
-{ config, pkgs, ... }:
+# Copy template profile và thay thế các placeholder
+cp -r ~/.config/nixpkgs/home/profiles/template/. ~/.config/nixpkgs/home/profiles/$username/
 
-{
-  # Cấu hình cá nhân cho $username
-  home.username = "$username";
-  home.homeDirectory = "/home/$username";
-  
-  # Thêm stateVersion để tránh lỗi
-  home.stateVersion = "24.11";
-  
-  # Các gói cá nhân
-  home.packages = with pkgs; [
-    # Thêm các gói cá nhân ở đây
-    git
-    vim
-    vscode
-  ];
-  
-  # Cấu hình cá nhân khác
-  programs = {
-    # Cấu hình các chương trình ở đây
-    zsh.enable = true;
-  };
-}
-EOF
+# Replace placeholders in the default.nix file
+sed -i "s|{{USERNAME}}|$username|g" ~/.config/nixpkgs/home/profiles/$username/default.nix
+sed -i "s|{{HOMEDIR}}|/home/$username|g" ~/.config/nixpkgs/home/profiles/$username/default.nix
+sed -i "s|{{FULLNAME}}|$fullname|g" ~/.config/nixpkgs/home/profiles/$username/default.nix
+sed -i "s|{{EMAIL}}|$email|g" ~/.config/nixpkgs/home/profiles/$username/default.nix
 
 echo "Đã thiết lập cấu hình người dùng cho $username trên $hostname!"
 "@
         
-        # Lưu script vào file tạm thời
+        # Similar updates for NixOS section...
+    }
+}
+
+# Lưu script vào file tạm thời
         $tempScript = "$env:TEMP\setup-ubuntu-profile.sh"
         $setupScript | Out-File -FilePath $tempScript -Encoding ASCII
         

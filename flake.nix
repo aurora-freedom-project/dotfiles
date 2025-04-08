@@ -67,10 +67,12 @@
       };
       
       # Darwin (macOS) configurations
-      darwinConfigurations = {
-        # MacBook configuration
-        macbook = darwin.lib.darwinSystem {
-          system = "x86_64-darwin";  # For Intel Mac
+      # In the outputs section, add a function to create configurations dynamically:
+      
+      # Helper function to create Darwin configurations
+      mkDarwinSystem = { hostname, username, system ? "x86_64-darwin" }: 
+        darwin.lib.darwinSystem {
+          inherit system;
           modules = [
             ./hosts/darwin/macbook
             ./modules/shared
@@ -79,13 +81,54 @@
             {
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
-              home-manager.users.mike = import ./home/profiles/mike;
-              # Global allowUnfree configuration
+              home-manager.users.${username} = import ./home/profiles/${username};
               nixpkgs.config.allowUnfree = true;
-            }
+            };
           ];
         };
+      
+      # Helper function to create NixOS configurations
+      mkNixosSystem = { hostname, username, system ? "x86_64-linux" }:
+        nixpkgs.lib.nixosSystem {
+          inherit system;
+          modules = [
+            ./hosts/nixos/${hostname}
+            home-manager.nixosModules.home-manager
+            {
+              home-manager.useGlobalPkgs = true;
+              home-manager.useUserPackages = true;
+              home-manager.users.${username} = import ./home/profiles/${username};
+              nixpkgs.config.allowUnfree = true;
+            };
+          ];
+        };
+      
+      # Helper function to create Home Manager configurations
+      mkHomeConfig = { username, hostname, system ? "x86_64-linux" }:
+        home-manager.lib.homeManagerConfiguration {
+          pkgs = nixpkgsFor.${system};
+          modules = [
+            ./home/linux.nix
+            ./home/profiles/${username}
+          ];
+        };
+      
+      # Then use these functions in your configurations:
+      darwinConfigurations = {
+        # Default macbook configuration
+        macbook = mkDarwinSystem { 
+          hostname = "macbook"; 
+          username = "mike";
+        };
+        
+        # Example of how to add a new team member's macbook
+        "macbook-john" = mkDarwinSystem {
+          hostname = "macbook-john";
+          username = "john";
+        };
       };
+      
+      # Similar updates for nixosConfigurations and homeConfigurations
       
       # Home-manager standalone configurations for non-NixOS Linux (Ubuntu)
       homeConfigurations = {

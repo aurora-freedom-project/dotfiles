@@ -180,3 +180,19 @@ home-manager switch --flake .#<username>@<hostname>
 ## Đóng góp
 
 Project này đang là base core, cần test và phát triển thêm. Anh em dùng học Nix rồi contribute lại cho project nhé :)
+
+## Git Workflow for Team Members
+
+This repository uses a branch-based workflow to manage team configurations:
+
+1. **main branch**: Stable, production-ready configuration
+2. **dev branch**: Development and testing of new features
+3. **username branches**: Personal branches for each team member
+
+### Getting Started as a Team Member
+
+1. Fork this repository
+2. Create your personal branch from main:
+   ```bash
+   git checkout -b your-username main
+   ```

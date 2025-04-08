@@ -172,9 +172,12 @@ setup_user_profile() {
   sed -i "s|{{FULLNAME}}|$fullname|g" "$HOME/.config/nixpkgs/home/profiles/$username/default.nix"
   sed -i "s|{{EMAIL}}|$email|g" "$HOME/.config/nixpkgs/home/profiles/$username/default.nix"
   
-  # Cập nhật hostname nếu có quyền sudo
-  if command -v sudo &> /dev/null; then
+  # Cập nhật hostname nếu có quyền sudo và không phải NixOS
+  if [ "$OS_TYPE" != "nixos" ] && command -v sudo &> /dev/null; then
     sudo hostnamectl set-hostname "$hostname"
+  elif [ "$OS_TYPE" == "nixos" ]; then
+    print_message "Trên NixOS, hostname được đặt thông qua file configuration.nix"
+    print_message "Thêm dòng sau vào configuration.nix: networking.hostName = \"$hostname\";"
   fi
   
   print_success "Đã thiết lập cấu hình người dùng cho $username trên $hostname!"

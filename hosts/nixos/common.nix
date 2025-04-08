@@ -36,8 +36,16 @@
   programs = { 
     zsh = {
       enable = true;
-      autosuggestion.enable = true;
       syntaxHighlighting.enable = true;
+      autocd = true;
+      enableAutosuggestions = true;
+      enableCompletion = true;
+    
+      oh-my-zsh = {
+        enable = true;
+        plugins = [ "git" "docker" "npm" "python" "sudo" "vscode" ];
+        theme = "robbyrussell";
+      };
     };
     
     git = {

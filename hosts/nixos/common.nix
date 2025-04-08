@@ -3,7 +3,6 @@
 {
   # Cấu hình chung cho NixOS
   nix = {
-    package = pkgs.nixFlakes;
     extraOptions = ''
       experimental-features = nix-command flakes
     '';

@@ -32,6 +32,20 @@
     fd
   ];
 
+  # Cấu hình các chương trình
+  programs = { 
+    zsh = {
+      enable = true;
+      autosuggestion.enable = true;
+      syntaxHighlighting.enable = true;
+    };
+    
+    git = {
+      enable = true;
+      delta.enable = true;
+    };
+  };
+
   # Cấu hình dịch vụ
   services = {
     openssh.enable = true;

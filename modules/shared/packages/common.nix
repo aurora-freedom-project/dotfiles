@@ -2,13 +2,12 @@
 { config, pkgs, ... }:
 
 {
-  # Common packages for all platforms
+  # Common packages for all platforms - system level
   environment.systemPackages = with pkgs; [
     # Development tools
     git
     vim
     neovim
-    vscode
     
     # Terminal utilities
     tmux
@@ -27,12 +26,7 @@
     
     # System tools
     bat
-    eza  # Changed from exa to eza
+    eza  # Modern replacement for exa
     jq
-    
-    # Languages and runtimes
-    nodejs
-    python3
-    rustup
   ];
 }

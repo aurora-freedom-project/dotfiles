@@ -1,5 +1,13 @@
 # Aurora Freedom Project Dotfiles
 
+## For New Team Members
+
+1. Fork this repository
+2. Copy the template profile:
+   ```bash
+   cp -r home/profiles/template home/profiles/yourusername
+   ```
+
 Repository này chứa các dotfiles được quản lý bằng Nix và Nix Flakes, hỗ trợ nhiều nền tảng khác nhau bao gồm NixOS, macOS, Ubuntu và Windows/WSL2.
 
 ## Tổng quan

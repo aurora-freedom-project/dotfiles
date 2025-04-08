@@ -19,13 +19,13 @@
     };
     
     # Cấu hình Docker
-    docker = {
-      enable = true;
-      autoPrune = {
-        enable = true;
-        dates = "weekly";
-      };
-    };
+    # docker = {
+    #   enable = true;
+    #   autoPrune = {
+    #     enable = true;
+    #     dates = "weekly";
+    #   };
+    # };
     
     # Cấu hình Podman
     podman = {

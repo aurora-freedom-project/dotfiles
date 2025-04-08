@@ -105,16 +105,41 @@ setup_user_profile() {
   read -p "Nhập email: " email
   
   # Tạo thư mục profile nếu chưa tồn tại
-  mkdir -p "$HOME/.config/nixpkgs/home/profiles/$username"
+  mkdir -p "$DOTFILES_DIR/home/profiles/$username"
   
-  # Copy template profile và thay thế các placeholder
-  cp -r "$HOME/.config/nixpkgs/home/profiles/template/." "$HOME/.config/nixpkgs/home/profiles/$username/"
+  # Create default.nix file directly instead of using sed
+  cat > "$DOTFILES_DIR/home/profiles/$username/default.nix" << EOF
+{ config, pkgs, ... }:
+
+{
+  # Cấu hình cá nhân cho $username
+  home.username = "$username";
+  home.homeDirectory = "/Users/$username";
   
-  # Replace placeholders in the default.nix file
-  sed -i '' "s|{{USERNAME}}|$username|g" "$HOME/.config/nixpkgs/home/profiles/$username/default.nix"
-  sed -i '' "s|{{HOMEDIR}}|/Users/$username|g" "$HOME/.config/nixpkgs/home/profiles/$username/default.nix"
-  sed -i '' "s|{{FULLNAME}}|$fullname|g" "$HOME/.config/nixpkgs/home/profiles/$username/default.nix"
-  sed -i '' "s|{{EMAIL}}|$email|g" "$HOME/.config/nixpkgs/home/profiles/$username/default.nix"
+  # Thêm stateVersion để tránh lỗi
+  home.stateVersion = "24.11";
+  
+  # Các gói cá nhân
+  home.packages = with pkgs; [
+    # Thêm các gói cá nhân ở đây
+    git
+    vim
+    vscode
+  ];
+  
+  # Cấu hình cá nhân khác
+  programs = {
+    git = {
+      enable = true;
+      userName = "$fullname";
+      userEmail = "$email";
+    };
+    
+    # Cấu hình các chương trình ở đây
+    zsh.enable = true;
+  };
+}
+EOF
   
   # Cập nhật hostname
   sudo scutil --set HostName "$hostname"

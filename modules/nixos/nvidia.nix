@@ -6,8 +6,6 @@
   # Cấu hình driver NVIDIA
   hardware.opengl = {
     enable = true;
-    driSupport = true;
-    driSupport32Bit = true;
   };
   
   # Cấu hình driver NVIDIA

@@ -108,7 +108,7 @@
       # NixOS configurations
       nixosConfigurations = {
         # Legion laptop configuration
-        legion = nixpkgs.lib.nixosSystem {
+        legion = nixpkgs-unstable.lib.nixosSystem {
           system = "x86_64-linux";
           modules = [
             ./hosts/nixos/legion

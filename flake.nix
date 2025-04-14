@@ -108,7 +108,7 @@
       # NixOS configurations
       nixosConfigurations = {
         # Legion laptop configuration
-        legion = nixpkgs-unstable.lib.nixosSystem {
+        legion = nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";
           modules = [
             ./hosts/nixos/legion
@@ -117,7 +117,7 @@
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
               home-manager.users.rnd = import ./home/profiles/rnd;
-              nixpkgs-unstable.config.allowUnfree = true;
+              nixpkgs.config.allowUnfree = true;
             }
           ];
         };

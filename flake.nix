@@ -22,6 +22,7 @@
 
   outputs = { self, nixpkgs, nixpkgs-unstable, nixpkgs-darwin, home-manager, darwin, ... }@inputs:
     let
+      nixpkgs.lib.traceImportStack = true;
       # Supported systems
       supportedSystems = [ "x86_64-linux" "x86_64-darwin" "aarch64-linux" "aarch64-darwin" ];
       

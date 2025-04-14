@@ -234,7 +234,7 @@ apply_configuration() {
     # Then apply configuration based on OS type
     if [ "$OS_TYPE" == "nixos" ]; then
       # Rebuild hệ thống NixOS
-      sudo nixos-rebuild switch --flake "$HOME/.config/nixpkgs#$hostname"
+      sudo nixos-rebuild switch --flake "$HOME/.config/nixpkgs#$hostname" --show-trace
     else
       # Áp dụng home-manager
       nix run home-manager/master -- switch --flake "$HOME/.config/nixpkgs#$username@$hostname"

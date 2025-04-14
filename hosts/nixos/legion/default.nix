@@ -4,8 +4,6 @@
   # Cấu hình chung cho NixOS
   imports = [
     ./hardware-configuration.nix
-    ../../../modules/nixos/nvidia.nix
-    ../../../modules/nixos/virtualization.nix
     ../common.nix
   ];
 

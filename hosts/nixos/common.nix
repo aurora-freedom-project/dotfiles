@@ -30,6 +30,7 @@
     unzip
     ripgrep
     fd
+    bun
   ];
 
   # Cấu hình các chương trình

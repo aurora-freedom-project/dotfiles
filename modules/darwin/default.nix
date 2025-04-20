@@ -64,6 +64,7 @@
       "visual-studio-code"
       "rectangle"
       "alfred"
+      "bun"
     ];
   };
 }

@@ -67,6 +67,7 @@
       "visual-studio-code"
       "rectangle"
       "alfred"
+      "localsend"
     ];
   };
 }

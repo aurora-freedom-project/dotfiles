@@ -54,6 +54,7 @@
     brews = [
       "mas"
       "oven-sh/bun/bun"
+      "rustup"
     ];
     
     casks = [

@@ -57,6 +57,7 @@
     ];
     
     casks = [
+      "zen-browser"
       "brave-browser"
       "arc"
       "ghostty"

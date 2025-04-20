@@ -53,6 +53,7 @@
     
     brews = [
       "mas"
+      "oven-sh/bun/bun"
     ];
     
     casks = [
@@ -64,7 +65,6 @@
       "visual-studio-code"
       "rectangle"
       "alfred"
-      "oven-sh/bun/bun"
     ];
   };
 }

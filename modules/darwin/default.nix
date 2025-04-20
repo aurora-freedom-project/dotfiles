@@ -64,7 +64,7 @@
       "visual-studio-code"
       "rectangle"
       "alfred"
-      "bun"
+      "oven-sh/bun/bun"
     ];
   };
 }

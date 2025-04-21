@@ -55,6 +55,8 @@
       "mas"
       "oven-sh/bun/bun"
       "rustup"
+      "podman"
+      "podman-compose"
     ];
     
     casks = [
@@ -68,6 +70,7 @@
       "rectangle"
       "alfred"
       "localsend"
+      "podman-desktop"
     ];
   };
 }

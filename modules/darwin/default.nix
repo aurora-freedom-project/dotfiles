@@ -57,6 +57,7 @@
       "rustup"
       "podman"
       "podman-compose"
+      "rustup"
     ];
     
     casks = [
